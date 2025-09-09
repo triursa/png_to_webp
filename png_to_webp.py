@@ -7,30 +7,48 @@ def convert_png_to_webp(input_folder, output_folder):
     # Ensure output directory exists
     os.makedirs(output_folder, exist_ok=True)
 
-    # Loop through all files in the input directory
-    for filename in os.listdir(input_folder):
-        if filename.endswith('.png'):
-            # Construct the full file path
-            input_path = os.path.join(input_folder, filename)
-            output_path = os.path.join(output_folder, f"{os.path.splitext(filename)[0]}.webp")
+    # Check if input directory exists
+    if not os.path.exists(input_folder):
+        print(f"Input folder '{input_folder}' does not exist.")
+        return
 
-            # Open the PNG file
-            with Image.open(input_path) as img:
-                # Convert to WebP and save
-                img.save(output_path, 'webp')
-                print(f"Converted {filename} to {os.path.basename(output_path)}")
+    # Loop through all files in the input directory
+    png_files = [f for f in os.listdir(input_folder) if f.endswith('.png')]
+    if not png_files:
+        print(f"No PNG files found in '{input_folder}'.")
+        return
+
+    for filename in png_files:
+        # Construct the full file path
+        input_path = os.path.join(input_folder, filename)
+        output_path = os.path.join(output_folder, f"{os.path.splitext(filename)[0]}.webp")
+
+        # Open the PNG file
+        with Image.open(input_path) as img:
+            # Convert to WebP and save
+            img.save(output_path, 'webp')
+            print(f"Converted {filename} to {os.path.basename(output_path)}")
 
 def move_converted_files(input_folder):
+    # Check if input directory exists
+    if not os.path.exists(input_folder):
+        print(f"Input folder '{input_folder}' does not exist.")
+        return
+
     # Get the current time for the new folder name
     timestamp = datetime.now().strftime("%m-%d-%H%M%S")
     converted_folder = f"converted_images_{timestamp}"
     os.makedirs(converted_folder, exist_ok=True)
 
     # Move the original PNG files to the new folder
-    for filename in os.listdir(input_folder):
-        if filename.endswith('.png'):
-            shutil.move(os.path.join(input_folder, filename), os.path.join(converted_folder, filename))
-            print(f"Moved {filename} to {converted_folder}")
+    png_files = [f for f in os.listdir(input_folder) if f.endswith('.png')]
+    if not png_files:
+        print(f"No PNG files to move in '{input_folder}'.")
+        return
+
+    for filename in png_files:
+        shutil.move(os.path.join(input_folder, filename), os.path.join(converted_folder, filename))
+        print(f"Moved {filename} to {converted_folder}")
 
 if __name__ == "__main__":
     input_folder = "png_files"
